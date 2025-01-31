@@ -12,6 +12,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./server:/app
+      - /app/node_modules
     networks:
       - invoice_demo_network
 
@@ -25,6 +28,9 @@ services:
       - "8762:5173"
     depends_on:
       - server
+    volumes:
+      - ./client:/app
+      - /app/node_modules
     networks:
       - invoice_demo_network
 
