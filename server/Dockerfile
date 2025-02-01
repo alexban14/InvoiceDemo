@@ -8,9 +8,10 @@ RUN npm install
 
 COPY . .
 
-COPY .env .env.development ./
+COPY .env.development ./.env
 
-RUN npm run build
+RUN  npx prisma generate && \
+	npm run build
 
 EXPOSE 3000
 

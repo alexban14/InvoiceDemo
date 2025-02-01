@@ -10,10 +10,13 @@ export class InvoicesController {
     // Get all invoices
     @Get()
     async getAllInvoices(
-        @Query('page') page: number = 1,
-        @Query('limit') limit: number = 10,
+        @Query('page') page: string,
+        @Query('limit') limit: string,
     ) {
-        return this.invoicesService.getAllInvoices(page, limit);
+        const pageNumber = parseInt(page, 10) || 1;
+        const limitNumber = parseInt(limit, 10) || 10;
+
+        return this.invoicesService.getAllInvoices(pageNumber, limitNumber);
     }
 
     // Get a single invoice by ID

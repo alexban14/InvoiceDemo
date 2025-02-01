@@ -1,6 +1,6 @@
 # Invoicing Demo App
 
-This is a demo application for an invoicing app, showcasing my technical knowledge developing full-stack Node.js applications using Typescript, React.js, Nest.js, Docker, Postgres, Prisma, and Docker Compose.
+This is a demo application for an invoicing app in order to showcase my technical knowledge developing full-stack Node.js applications using Typescript, React.js, Nest.js, Docker, Postgres, Prisma, and Docker Compose.
 
 ## Project Setup
 
@@ -19,9 +19,12 @@ docker compose up -d --build
 ```shell
 docker compose exec -it server sh
 ```
-- and run the following commands in the shown order
+- run the migrate command to apply the database schema
 ```shell
 npx prisma migrate dev
+```
+- and run the following command to seed the database with demo data:
+```shell
 npx ts-node prisma/demo.seeder.ts
 ```
 

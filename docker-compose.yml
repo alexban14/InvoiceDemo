@@ -6,7 +6,7 @@ services:
       context: ./server
       dockerfile: Dockerfile
     env_file:
-      - ./server/.env
+      - ./server/.env.development
     ports:
       - "8761:3000"
     depends_on:
@@ -23,7 +23,7 @@ services:
       context: ./client
       dockerfile: Dockerfile
     env_file:
-      - ./client/.env
+      - ./client/.env.development
     ports:
       - "8762:5173"
     depends_on:
