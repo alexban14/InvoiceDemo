@@ -1,5 +1,4 @@
-version: "3.8"
-
+name: invoice
 services:
   server:
     build:
@@ -36,8 +35,8 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: postgres_db
-    restart: always
+    container_name: db_invoice_demo
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres_dbu
       POSTGRES_PASSWORD: invoice_db_pass
