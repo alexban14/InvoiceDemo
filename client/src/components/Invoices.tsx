@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useInvoices } from '../hooks/useInvoices';
+import { useDeleteInvoice } from '../hooks/useInvoiceMutations';
 import {
     Table,
     TableBody,
@@ -12,17 +13,34 @@ import {
     Modal,
     Box,
     Typography,
+    Button,
+    // IconButton,
 } from '@mui/material';
 import axios from 'axios';
+import CreateInvoice from './CreateInvoice';
+import EditInvoice from "./InvoiceEdit.tsx";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Invoices = () => {
     const [page, setPage] = useState(1);
     const limit = 10;
-
     const { data, isLoading, isError } = useInvoices({ page, limit });
-
-    const [open, setOpen] = useState(false);
+    const [openCreate, setOpenCreate] = useState(false);
+    const [openDetails, setOpenDetails] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const { mutate: deleteMutate } = useDeleteInvoice();
+
+    const handleDelete = (id: string) => {
+        if (window.confirm('Are you sure you want to delete this invoice?')) {
+            deleteMutate(id, {
+                onSuccess: () => {
+                    setOpenDetails(false);
+                },
+            });
+        }
+    };
 
     const fetchInvoiceDetails = async (id: string) => {
         const apiUrl = import.meta.env.VITE_SERVER_URL;
@@ -35,7 +53,7 @@ const Invoices = () => {
                 }
             });
             setSelectedInvoice(response.data);
-            setOpen(true); // Open the modal
+            setOpenDetails(true); // Open the modal
         } catch (error) {
             console.error('Error fetching invoice details:', error);
         }
@@ -46,7 +64,7 @@ const Invoices = () => {
     };
 
     const handleClose = () => {
-        setOpen(false);
+        setOpenDetails(false);
         setSelectedInvoice(null);
     };
 
@@ -64,6 +82,8 @@ const Invoices = () => {
 
     return (
         <div>
+            <CreateInvoice open={openCreate} onClose={() => setOpenCreate(false)} />
+
             <TableContainer
                 component={Paper}
                 sx={{
@@ -101,6 +121,22 @@ const Invoices = () => {
                 </Table>
             </TableContainer>
 
+            <Box
+                display="flex"
+                justifyContent="flex-end"
+                m={2}
+                position="relative"
+                zIndex={101}
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setOpenCreate(true)}
+                >
+                    Create Invoice
+                </Button>
+            </Box>
+
             <Pagination
                 count={Math.ceil(data?.total / limit)} // Total number of pages
                 page={page}
@@ -109,7 +145,7 @@ const Invoices = () => {
             />
 
             <Modal
-                open={open}
+                open={openDetails}
                 onClose={handleClose}
                 aria-labelledby="invoice-details-modal"
                 aria-describedby="invoice-details-description"
@@ -127,11 +163,17 @@ const Invoices = () => {
                         borderRadius: 2,
                     }}
                 >
-                    <Typography id="invoice-details-modal" variant="h6" component="h2" sx={{ mb: 2 }}>
+                    <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
                         Invoice Details
                     </Typography>
                     {selectedInvoice && (
                         <div>
+                            <EditInvoice
+                                open={openEdit}
+                                onClose={() => setOpenEdit(false)}
+                                invoice={selectedInvoice}
+                            />
+
                             <Typography><strong>Vendor Name:</strong> {selectedInvoice.vendor_name}</Typography>
                             <Typography><strong>Amount:</strong> {selectedInvoice.amount}</Typography>
                             <Typography>
@@ -139,6 +181,25 @@ const Invoices = () => {
                             </Typography>
                             <Typography><strong>Description:</strong> {selectedInvoice.description}</Typography>
                             <Typography><strong>Paid:</strong> {selectedInvoice.paid ? 'Yes' : 'No'}</Typography>
+
+                            <Box mt={2} display="flex" justifyContent="space-between">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<EditIcon />}
+                                    onClick={() => setOpenEdit(true)}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={() => handleDelete(selectedInvoice.id)}
+                                >
+                                    Delete
+                                </Button>
+                            </Box>
                         </div>
                     )}
                 </Box>
